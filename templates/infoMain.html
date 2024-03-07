@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPU/RAM RealTime Status</title>
+</head>
+<style>
+  p {text-align: center}
+  #infoWrap{width:359px}
+  #infoMain{border:solid 1px black;width:350px;height:400px;overflow-y: scroll;overflow-scrolling:unset;text-align: left;padding-left:8px}
+  #infoMain::-webkit-scrollbar {display: none;}
+  #realTime{font-size:10px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  function getInfo(){
+    $.ajax({
+      url: '/info/getInfo/',
+      method: 'get',
+      success: function (data) {
+        var cpu_percent = ''+data.cpu_percent;
+        if(cpu_percent.length == 1 ) {
+          cpu_percent = `0${cpu_percent}.0`;
+        }else if(cpu_percent.length == 2){
+          cpu_percent = `${cpu_percent}.0`;
+        }else if(cpu_percent.length == 3){
+          cpu_percent = `0${cpu_percent}`;
+        }
+        var realTime = new Date();
+        var text = `CPU : ${cpu_percent} % RAM : ${data.used_memory}/${data.total_memory}`;
+        text +=  `<span id="realTime">(${realTime.toLocaleString()})</span>`;
+        text += '<br>';
+        $('#infoMain').append(text);
+        $('#infoMain').scrollTop($('#infoMain')[0].scrollHeight);
+      }
+    });
+  }
+  setInterval(() => getInfo(), 1000)
+
+
+
+  </script>
+<body>
+  <main class="container">
+      <div id="infoWrap">
+        <p>CPU/RAM RealTime STATUS</p>
+        <div id="infoMain">
+        </div>
+      </div>
+  </main>
+</body>
+</html>
